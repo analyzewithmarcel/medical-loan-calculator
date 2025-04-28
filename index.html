@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Professional Student Loan Repayment Calculator</title>
+<style>
+ body {
+ font-family: Arial, sans-serif;
+ line-height: 1.6;
+ color: #333;
+ max-width: 800px;
+ margin: 0 auto;
+ padding: 20px;
+ }
+ h1, h2 {
+ color: #0066cc;
+ }
+ .calculator {
+ background-color: #f9f9f9;
+ border: 1px solid #ddd;
+ padding: 20px;
+ border-radius: 5px;
+ margin-bottom: 20px;
+ }
+ .result {
+ background-color: #e6f2ff;
+ border: 1px solid #b3d9ff;
+ padding: 15px;
+ border-radius: 5px;
+ margin-top: 20px;
+ }
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin: 20px 0;
+ }
+ table, th, td {
+ border: 1px solid #ddd;
+ }
+ th, td {
+ padding: 10px;
+ text-align: left;
+ }
+ th {
+ background-color: #f2f2f2;
+ }
+ .highlight {
+ background-color: #ffffcc;
+ }
+ .input-group {
+ margin-bottom: 15px;
+ }
+ label {
+ display: block;
+ margin-bottom: 5px;
+ font-weight: bold;
+ }
+ input, select {
+ width: 100%;
+ padding: 8px;
+ border: 1px solid #ddd;
+ border-radius: 4px;
+ box-sizing: border-box;
+ }
+ button {
+ background-color: #0066cc;
+ color: white;
+ padding: 10px 15px;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 16px;
+ }
+ button:hover {
+ background-color: #0052a3;
+ }
+ .footer {
+ margin-top: 30px;
+ font-size: 12px;
+ color: #666;
+ text-align: center;
+ }
+ .tips {
+ background-color: #e6ffe6;
+ border: 1px solid #b3ffb3;
+ padding: 15px;
+ border-radius: 5px;
+ margin: 20px 0;
+ }
+ .disclaimer {
+ font-size: 12px;
+ color: #777;
+ font-style: italic;
+ margin: 20px 0;
+ }
+ @media print {
+ button, .no-print {
+ display: none;
+ }
+ body, .calculator, .result {
+ background: white;
+ border: none;
+ }
+ }
+</style>
+</head>
+
+<body>
+
+<h1>Medical Professional Student Loan Repayment Calculator</h1>
+
+<p>This interactive calculator is designed specifically for medical professionals to help plan student loan repayment strategies during and after residency/fellowship.</p>
+
+<div class="calculator">
+
+<h2>Your Loan Information</h2>
+
+<div class="input-group">
+<label for="loanAmount">Total Student Loan Amount ($):</label>
+<input type="number" id="loanAmount" value="200000">
+</div>
+
+<div class="input-group">
+<label for="interestRate">Average Interest Rate (%):</label>
+<input type="number" id="interestRate" step="0.1" value="6.8">
+</div>
+
+<div class="input-group">
+<label for="careerStage">Career Stage:</label>
+<select id="careerStage">
+<option value="medical-student">Medical Student</option>
+<option value="resident">Resident</option>
+<option value="fellow">Fellow</option>
+<option value="attending">Attending Physician</option>
+</select>
+</div>
+
+<div class="input-group">
+<label for="specialty">Medical Specialty:</label>
+<select id="specialty">
+<option value="primary-care">Primary Care</option>
+<option value="emergency">Emergency Medicine</option>
+<option value="surgery">Surgery</option>
+<option value="radiology">Radiology</option>
+<option value="pediatrics">Pediatrics</option>
+<option value="psychiatry">Psychiatry</option>
+<option value="other">Other Specialty</option>
+</select>
+</div>
+
+<div class="input-group">
+<label for="income">Current Annual Income (before taxes):</label>
+<input type="number" id="income" value="60000">
+</div>
+
+<div class="input-group">
+<label for="anticipatedIncome">Anticipated Attending Annual Income:</label>
+<input type="number" id="anticipatedIncome" value="250000">
+</div>
+
+<div class="input-group">
+<label for="yearsToAttending">Years Until Attending Position:</label>
+<input type="number" id="yearsToAttending" value="3">
+</div>
+
+<div class="input-group">
+<label for="monthlyBudget">Monthly Budget for Loan Repayment ($):</label>
+<input type="number" id="monthlyBudget" value="500">
+</div>
+
+<button onclick="calculateRepayment()">Calculate Repayment Options</button>
+
+</div>
+
+<div class="result" id="resultSection" style="display: none;">
+
+<h2>Your Personalized Repayment Analysis</h2>
+
+<div id="resultContent"></div>
+
+<div id="pslf-eligibility"></div>
+
+<h3>Repayment Comparison</h3>
+
+<table id="repaymentTable">
+<tr>
+<th>Repayment Plan</th>
+<th>Monthly Payment (Residency)</th>
+<th>Monthly Payment (Attending)</th>
+<th>Total Paid</th>
+<th>Time to Payoff</th>
+<th>Recommendation</th>
+</tr>
+</table>
+
+<div class="tips">
+<h3>Personalized Tips Based on Your Situation</h3>
+<ul id="tipsList"></ul>
+</div>
+
+<button onclick="window.print()">Print/Save as PDF</button>
+
+</div>
+
+<div class="disclaimer">
+<p>Disclaimer: This calculator provides estimates only and should not be considered financial advice. Interest calculations are simplified and actual loan terms may vary. Always consult with a financial advisor for personalized guidance.</p>
+</div>
+
+<div class="footer">
+<p>© 2025 Medical Loan Calculators | For educational purposes only</p>
+</div>
+
+<script>
+ function calculateRepayment() {
+ // Get input values
+ const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+ const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+ const careerStage = document.getElementById('careerStage').value;
+ const specialty = document.getElementById('specialty').value;
+ const currentIncome = parseFloat(document.getElementById('income').value);
+ const attendingIncome = parseFloat(document.getElementById('anticipatedIncome').value);
+ const yearsToAttending = parseInt(document.getElementById('yearsToAttending').value);
+ const monthlyBudget = parseFloat(document.getElementById('monthlyBudget').value);
+ // Calculate standard repayment
+ const monthlyInterestRate = interestRate / 12;
+ const numPayments = 10 * 12; // 10 years in months
+ const standardMonthlyPayment = (loanAmount * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -numPayments));
+ const standardTotalPaid = standardMonthlyPayment * numPayments;
+ // Calculate income-driven repayment (simplified)
+ let idrResidentPayment = Math.max((currentIncome - 24000) * 0.10 / 12, 0);
+ let idrAttendingPayment = Math.max((attendingIncome - 24000) * 0.10 / 12, 0);
+ // Calculate PSLF eligibility and benefit
+ const isPSLFEligible = specialty === 'primary-care' || specialty === 'pediatrics' || specialty === 'psychiatry';
+ let pslfBenefit = 0;
+ let pslfMessage = "";
+ if (isPSLFEligible) {
+ // Simplified PSLF calculation
+ const paymentsBeforeAttending = yearsToAttending * 12;
+ const remainingPayments = 120 - paymentsBeforeAttending; // 120 payments (10 years) for PSLF
+ const totalPaidUnderPSLF = (idrResidentPayment * paymentsBeforeAttending) + (idrAttendingPayment * Math.min(remainingPayments, 0));
+ pslfBenefit = loanAmount - totalPaidUnderPSLF;
+ pslfMessage = `<div class="highlight">
+<h3>Public Service Loan Forgiveness (PSLF) Opportunity</h3>
+<p>Based on your specialty (${document.getElementById('specialty').options[document.getElementById('specialty').selectedIndex].text}), you may qualify for PSLF. Working at a qualifying non-profit or government institution could result in loan forgiveness after 10 years of qualifying payments.</p>
+<p><strong>Potential forgiveness amount: $${pslfBenefit.toFixed(2)}</strong></p>
+</div>`;
+ } else {
+ pslfMessage = `<p>Based on your selected specialty, you may have fewer PSLF opportunities unless working for a qualifying employer. Consider exploring private practice loan repayment programs.</p>`;
+ }
+ // Calculate refinancing option
+ const refinanceRate = interestRate - 0.02; // Assume 2% lower than current rate
+ const refinanceMonthlyRate = refinanceRate / 12;
+ const refinancePayment = (loanAmount * refinanceMonthlyRate) / (1 - Math.pow(1 + refinanceMonthlyRate, -numPayments));
+ const refinanceTotalPaid = refinancePayment * numPayments;
+ const refinanceSavings = standardTotalPaid - refinanceTotalPaid;
+ // Generate recommendations based on inputs
+ const tips = [];
+ if (monthlyBudget < standardMonthlyPayment * 0.5) {
+ tips.push("Your current budget for loan repayment is significantly below the standard repayment amount. Consider income-driven repayment plans during residency.");
+ }
+ if (yearsToAttending <= 3 && loanAmount > 150000) {
+ tips.push("With high debt and short time to attending salary, consider aggressive repayment when your income increases rather than refinancing immediately.");
+ }
+ if (specialty === 'primary-care' || specialty === 'pediatrics' || specialty === 'psychiatry') {
+ tips.push("Your specialty may qualify for multiple loan forgiveness programs. Prioritize employment at non-profit hospitals to maximize PSLF benefits.");
+ }
+ if (careerStage === 'resident' && loanAmount > 100000) {
+ tips.push("During residency, focus on making qualifying payments for PSLF or income-driven forgiveness rather than paying extra principal.");
+ }
+ if (attendingIncome > 300000 && loanAmount < 200000) {
+ tips.push("With your high income potential and moderate debt, consider an aggressive 5-year repayment plan once you reach attending status.");
+ }
+ // Display results
+ document.getElementById('resultSection').style.display = 'block';
+ let resultContent = `
+<p>Based on your input of $${loanAmount.toFixed(2)} in student loans at ${(interestRate * 100).toFixed(1)}% interest rate:</p>
+<ul>
+<li><strong>Standard 10-year monthly payment:</strong> $${standardMonthlyPayment.toFixed(2)}</li>
+<li><strong>Income-driven payment (Residency):</strong> $${idrResidentPayment.toFixed(2)}</li>
+<li><strong>Income-driven payment (Attending):</strong> $${idrAttendingPayment.toFixed(2)}</li>
+</ul>
+`;
+ document.getElementById('resultContent').innerHTML = resultContent;
+ document.getElementById('pslf-eligibility').innerHTML = pslfMessage;
+ // Build comparison table
+ let tableContent = `
+<tr>
+<td>Standard Repayment</td>
+<td>$${standardMonthlyPayment.toFixed(2)}</td>
+<td>$${standardMonthlyPayment.toFixed(2)}</td>
+<td>$${standardTotalPaid.toFixed(2)}</td>
+<td>10 years</td>
+<td>${standardMonthlyPayment > monthlyBudget ? 'Not affordable during residency' : 'Simple option'}</td>
+</tr>
+<tr>
+<td>Income-Driven Repayment</td>
+<td>$${idrResidentPayment.toFixed(2)}</td>
+<td>$${idrAttendingPayment.toFixed(2)}</td>
+<td>Varies*</td>
+<td>10-25 years</td>
+<td>${isPSLFEligible ? 'Recommended for PSLF' : 'Good during residency'}</td>
+</tr>
+<tr>
+<td>Refinancing After Residency</td>
+<td>N/A</td>
+<td>$${refinancePayment.toFixed(2)}</td>
+<td>$${refinanceTotalPaid.toFixed(2)}</td>
+<td>10 years</td>
+<td>Saves $${refinanceSavings.toFixed(2)} total</td>
+</tr>
+`;
+ document.getElementById('repaymentTable').innerHTML = `
+<tr>
+<th>Repayment Plan</th>
+<th>Monthly Payment (Residency)</th>
+<th>Monthly Payment (Attending)</th>
+<th>Total Paid</th>
+<th>Time to Payoff</th>
+<th>Recommendation</th>
+</tr>
+ ${tableContent}
+`;
+ // Display personalized tips
+ let tipsHTML = '';
+ tips.forEach(tip => {
+ tipsHTML += `<li>${tip}</li>`;
+ });
+ document.getElementById('tipsList').innerHTML = tipsHTML;
+ }
+</script>
+
+</body>
+
+</html>
